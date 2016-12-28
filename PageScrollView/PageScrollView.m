@@ -24,7 +24,6 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
 @interface PageScrollView()<UIGestureRecognizerDelegate,YCScrollviewDelegate>
 @property (nonatomic, strong) YCScrollview *scrollView;
 @property (nonatomic, assign) BOOL isScrolling;//是否滑动
-@property (nonatomic, assign) BOOL isClick;//是否点击
 @property (nonatomic, assign) BOOL scrollToAnimation;//是否执行滑动到指定页面的动画
 @property (nonatomic, strong) NSMutableArray *scrollViewArray;//记录scrollView上的view的array
 @end
@@ -54,32 +53,44 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
 }
 
 - (void)scrollToNextWithAnimation:(BOOL)animation {
-    if (!self.cycleEnable && self.isClick) {
-        return;
-    }
+    
     if (!self.cycleEnable && _curPage >= _totalPages-1) {
         return;
     }
-    self.isClick = YES;
+    
     CGFloat viewSize = self.scrollView.contentSize.width/self.scrollView.bounds.size.width;
+    CGFloat x = (viewSize-1) * self.scrollView.bounds.size.width;
+    if (x == self.scrollView.contentOffset.x) {
+//        NSLog(@"重置位置 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
+        CGFloat previousX = x - self.scrollView.bounds.size.width;
+        previousX = previousX > 0?previousX:0;
+//        NSLog(@"重置位置 x %@",@(previousX));
+        [self.scrollView setContentOffset:CGPointMake(previousX, 0) animated:NO];
+//        NSLog(@"重置位置后 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
+    }
+    
     [self.scrollView setContentOffset:CGPointMake((viewSize-1) * self.scrollView.bounds.size.width, 0) animated:animation];
 }
 
 - (void)scrollToPreviousWithAnimation:(BOOL)animation {
-    if (!self.cycleEnable && self.isClick) {
-        return;
-    }
+    
     if (!self.cycleEnable && _curPage <= 0) {
         return;
     }
-    self.isClick = YES;
+    
+    CGFloat x = 0;
+    if (x == self.scrollView.contentOffset.x) {
+//        NSLog(@"重置位置 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
+        CGFloat previousX = x + self.scrollView.bounds.size.width;
+//        NSLog(@"重置位置 x %@",@(previousX));
+        [self.scrollView setContentOffset:CGPointMake(previousX, 0) animated:NO];
+//        NSLog(@"重置位置后 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
+    }
+    
     [self.scrollView setContentOffset:CGPointMake(0, 0) animated:animation];
 }
 
 - (void)scrollToIndexView:(NSInteger)index animation:(BOOL)animation {
-    if (self.isClick) {
-        return;
-    }
     if (index != _curPage && (index <= _totalPages-1 && index >= 0)) {
         if (animation) {
             //滑动至指定页面动画
@@ -98,7 +109,6 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             _curPage = index;
             self.scrollToAnimation = NO;
-            self.isClick = NO;
             [self loadData];
         });
     }
@@ -155,7 +165,6 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
 - (void)handleTap:(UITapGestureRecognizer *)tap {
     if (self.delegate && [self.delegate respondsToSelector:@selector(pageScrollView:didClickPageAtIndex:)]) {
         [self.delegate pageScrollView:self didClickPageAtIndex:_curPage];
-        self.isClick = NO;
     }
 }
 
@@ -178,7 +187,6 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
     self.isScrolling = NO;
     self.cycleEnable = NO;
     self.scrollToAnimation = NO;
-    self.isClick = NO;
     self.bounces = NO;
     self.scrollEnabled = YES;
     self.scrollViewArray = [[NSMutableArray alloc]initWithCapacity:3];
@@ -217,20 +225,18 @@ static void *ScrollViewContentOffsetObservationContext = &ScrollViewContentOffse
     
     UIScrollView *scrollView = (UIScrollView *)object;
     if (context == ScrollViewContentOffsetObservationContext && [path isEqual:@"contentOffset"]){
-        if ( ![newContentStr isEqualToString:oldContentStr] && self.isClick) {
+        if ( ![newContentStr isEqualToString:oldContentStr]) {
             self.scrolling = YES;
             CGFloat viewSize = self.scrollView.contentSize.width/self.scrollView.bounds.size.width;
             if (scrollView.contentOffset.x == 0) {//上一页
                 [self updateCurPageIndexToNextPage:NO];
                 self.scrollToAnimation = NO;
-                self.isClick = NO;
                 [self loadData];
                 self.scrolling = NO;
             }
             else if(scrollView.contentOffset.x == (viewSize-1) * self.scrollView.bounds.size.width) {//下一页
                 [self updateCurPageIndexToNextPage:YES];
                 self.scrollToAnimation = NO;
-                self.isClick = NO;
                 [self loadData];
                 self.scrolling = NO;
             }
