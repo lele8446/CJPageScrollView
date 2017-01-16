@@ -104,7 +104,7 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
             }
         }
         //动画完成，刷新数据
-        double delayInSeconds = animation?0.25:0;
+        double delayInSeconds = animation?0.15:0;
         dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, delayInSeconds * NSEC_PER_SEC);
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             _curPage = index;
