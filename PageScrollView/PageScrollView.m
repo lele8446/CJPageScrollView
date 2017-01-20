@@ -25,14 +25,14 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
 @property (nonatomic, strong) YCScrollview *scrollView;
 @property (nonatomic, assign) BOOL isScrolling;//是否滑动
 @property (nonatomic, assign) BOOL scrollToAnimation;//是否执行滑动到指定页面的动画
+@property (nonatomic, assign) BOOL isClickScrollToIndex;//是否点击滑动至指定页（不同于上一页、下一页）
 @property (nonatomic, strong) NSMutableArray *scrollViewArray;//记录scrollView上的view的array
 @end
 
 @implementation PageScrollView
 
 #pragma mark - Public Methods
-- (void)reloadData
-{
+- (void)reloadData {
     _totalPages = [_dataSource numberOfPages];
     if (_totalPages <= 0) {
         if (self.scrollViewArray.count > 0) {
@@ -53,7 +53,6 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
 }
 
 - (void)scrollToNextWithAnimation:(BOOL)animation {
-    
     if (!self.cycleEnable && _curPage >= _totalPages-1) {
         return;
     }
@@ -61,30 +60,31 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
     CGFloat viewSize = self.scrollView.contentSize.width/self.scrollView.bounds.size.width;
     CGFloat x = (viewSize-1) * self.scrollView.bounds.size.width;
     if (x == self.scrollView.contentOffset.x) {
-//        NSLog(@"重置位置 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
+        NSLog(@"重置位置 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
         CGFloat previousX = x - self.scrollView.bounds.size.width;
         previousX = previousX > 0?previousX:0;
-//        NSLog(@"重置位置 x %@",@(previousX));
+        NSLog(@"重置位置 x %@",@(previousX));
         [self.scrollView setContentOffset:CGPointMake(previousX, 0) animated:NO];
-//        NSLog(@"重置位置后 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
+        
+        NSLog(@"重置位置后 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
     }
     
     [self.scrollView setContentOffset:CGPointMake((viewSize-1) * self.scrollView.bounds.size.width, 0) animated:animation];
 }
 
 - (void)scrollToPreviousWithAnimation:(BOOL)animation {
-    
     if (!self.cycleEnable && _curPage <= 0) {
         return;
     }
     
     CGFloat x = 0;
     if (x == self.scrollView.contentOffset.x) {
-//        NSLog(@"重置位置 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
+        NSLog(@"重置位置 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
         CGFloat previousX = x + self.scrollView.bounds.size.width;
-//        NSLog(@"重置位置 x %@",@(previousX));
+        NSLog(@"重置位置 x %@",@(previousX));
         [self.scrollView setContentOffset:CGPointMake(previousX, 0) animated:NO];
-//        NSLog(@"重置位置后 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
+        
+        NSLog(@"重置位置后 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
     }
     
     [self.scrollView setContentOffset:CGPointMake(0, 0) animated:animation];
@@ -109,7 +109,9 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
         dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
             _curPage = index;
             self.scrollToAnimation = NO;
+            self.isClickScrollToIndex = YES;
             [self loadData];
+            self.isClickScrollToIndex = NO;
         });
     }
 }
@@ -189,6 +191,7 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
     self.scrollToAnimation = NO;
     self.bounces = NO;
     self.scrollEnabled = YES;
+    self.isClickScrollToIndex = NO;
     self.scrollViewArray = [[NSMutableArray alloc]initWithCapacity:3];
 }
 
@@ -222,6 +225,9 @@ static void *ScrollViewContentOffsetObservationContext = &ScrollViewContentOffse
     if (self.isScrolling) {
         return;
     }
+    if (self.isClickScrollToIndex) {
+        return;
+    }
     
     UIScrollView *scrollView = (UIScrollView *)object;
     if (context == ScrollViewContentOffsetObservationContext && [path isEqual:@"contentOffset"]){
@@ -229,15 +235,21 @@ static void *ScrollViewContentOffsetObservationContext = &ScrollViewContentOffse
             self.scrolling = YES;
             CGFloat viewSize = self.scrollView.contentSize.width/self.scrollView.bounds.size.width;
             if (scrollView.contentOffset.x == 0) {//上一页
+                NSInteger currentPage = _curPage;
                 [self updateCurPageIndexToNextPage:NO];
+                if (currentPage != _curPage) {
+                    [self loadData];
+                }
                 self.scrollToAnimation = NO;
-                [self loadData];
                 self.scrolling = NO;
             }
             else if(scrollView.contentOffset.x == (viewSize-1) * self.scrollView.bounds.size.width) {//下一页
+                NSInteger currentPage = _curPage;
                 [self updateCurPageIndexToNextPage:YES];
+                if (currentPage != _curPage) {
+                    [self loadData];
+                }
                 self.scrollToAnimation = NO;
-                [self loadData];
                 self.scrolling = NO;
             }
         }
@@ -247,8 +259,7 @@ static void *ScrollViewContentOffsetObservationContext = &ScrollViewContentOffse
     }
 }
 
-- (void)loadData
-{
+- (void)loadData {
     [self updateScrollViewFrameWithCurrentViewType:[self getScrollViewType]];
 }
 
