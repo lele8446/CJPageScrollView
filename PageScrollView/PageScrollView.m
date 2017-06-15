@@ -55,8 +55,12 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
 - (void)reloadDataWithStartIndex:(NSInteger)index {
     _totalPages = [_dataSource numberOfPages];
     
-    _curPage = index<0?0:index;
-    _curPage = index>=_totalPages?_totalPages-1:index;
+    if (index<0) {
+        _curPage = 0;
+    }
+    if (index>=_totalPages) {
+        _curPage = _totalPages-1;
+    }
     
     if (_totalPages <= 0) {
         if (self.scrollViewArray.count > 0) {
@@ -69,9 +73,6 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
         }
         self.scrollView.contentSize = CGSizeMake(self.scrollView.bounds.size.width,0);
         return;
-    }
-    if (0 > _curPage || _curPage >= _totalPages) {
-        _curPage = 0;
     }
     [self loadData];
 }
