@@ -52,6 +52,30 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
     [self loadData];
 }
 
+- (void)reloadDataWithStartIndex:(NSInteger)index {
+    _totalPages = [_dataSource numberOfPages];
+    
+    _curPage = index<0?0:index;
+    _curPage = index>=_totalPages?_totalPages-1:index;
+    
+    if (_totalPages <= 0) {
+        if (self.scrollViewArray.count > 0) {
+            [self.scrollViewArray enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop){
+                if ([obj[@"view"] respondsToSelector:@selector(removeFromSuperview)]) {
+                    [obj[@"view"] removeFromSuperview];
+                }
+            }];
+            [self.scrollViewArray removeAllObjects];
+        }
+        self.scrollView.contentSize = CGSizeMake(self.scrollView.bounds.size.width,0);
+        return;
+    }
+    if (0 > _curPage || _curPage >= _totalPages) {
+        _curPage = 0;
+    }
+    [self loadData];
+}
+
 - (void)scrollToNextWithAnimation:(BOOL)animation {
     if (!self.cycleEnable && _curPage >= _totalPages-1) {
         return;
@@ -142,6 +166,22 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
     [self addSubview:self.scrollView];
     [self bringSubviewToFront:self.scrollView];
 }
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    if (self.scrollViewArray.count > 0) {
+        for (NSDictionary *dic in self.scrollViewArray) {
+            if (dic[@"view"] && ![dic[@"view"] isKindOfClass:[NSNull class]]) {
+                UIView *view = dic[@"view"];
+                CGRect viewFrame = view.frame;
+                viewFrame.size.width = self.scrollView.bounds.size.width;
+                viewFrame.size.height = self.scrollView.bounds.size.height;
+                view.frame = viewFrame;
+            }
+        }
+    }
+}
+
 
 - (YCScrollview *)scrollView {
     if (!_scrollView) {

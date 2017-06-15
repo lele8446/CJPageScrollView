@@ -47,6 +47,13 @@
 - (void)reloadData;
 
 /**
+ *  从指定位置开始刷新数据
+ *
+ *  @param index 初始位置
+ */
+- (void)reloadDataWithStartIndex:(NSInteger)index;
+
+/**
  *  滑动到下一页
  *
  *  @param animation 是否有动画
@@ -84,7 +91,7 @@
 - (void)pageScrollView:(PageScrollView *)pageView didClickPageAtIndex:(NSInteger)index;
 
 /**
- *  声明对pageView上的指定view，滑动无效（用来处理scrollView的手势冲突）
+ *  声明在pageView上的指定view，滑动无效（用来处理scrollView的手势冲突）
  *
  *  @param pageView
  *  @param view        需要处理手势冲突的view
