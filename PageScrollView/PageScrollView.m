@@ -55,6 +55,7 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
 - (void)reloadDataWithStartIndex:(NSInteger)index {
     _totalPages = [_dataSource numberOfPages];
     
+    _curPage = index;
     if (index<0) {
         _curPage = 0;
     }
