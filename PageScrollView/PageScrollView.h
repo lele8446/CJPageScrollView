@@ -17,7 +17,7 @@
 /**
  *  点击页面
  *
- *  @param pageView
+ *  @param pageView PageScrollView
  *  @param index    点击了第index的页面
  */
 - (void)pageScrollView:(PageScrollView *)pageView didClickPageAtIndex:(NSInteger)index;
@@ -25,7 +25,7 @@
 /**
  *  声明在pageView上的指定view，滑动无效（用来处理scrollView的手势冲突）
  *
- *  @param pageView
+ *  @param pageView    PageScrollView
  *  @param view        需要处理手势冲突的view
  *  @param point       触摸点
  *
@@ -42,15 +42,15 @@
 /**
  *  可滑动页面个数
  *
- *  @return
+ *  @return  NSInteger
  */
 - (NSInteger)numberOfPages;
 
 /**
- *  生成index对应的view
+ *  生成指定index对应的view
  *
- *  @param pageView
- *  @param index
+ *  @param pageView  PageScrollView
+ *  @param index     指定页面的index
  *
  *  @return 目标view
  */
@@ -60,8 +60,8 @@
 /**
  *  已滑动至第index页
  *
- *  @param pageView
- *  @param index
+ *  @param pageView  PageScrollView
+ *  @param index     指定页面的index
  */
 - (void)pageScrollView:(PageScrollView *)pageView didLoadItemAtIndex:(NSInteger)index;
 @end

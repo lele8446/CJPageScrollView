@@ -106,13 +106,13 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
     CGFloat viewSize = self.scrollView.contentSize.width/self.scrollView.bounds.size.width;
     CGFloat x = (viewSize-1) * self.scrollView.bounds.size.width;
     if (x == self.scrollView.contentOffset.x) {
-        NSLog(@"重置位置 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
+//        NSLog(@"重置位置 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
         CGFloat previousX = x - self.scrollView.bounds.size.width;
         previousX = previousX > 0?previousX:0;
-        NSLog(@"重置位置 x %@",@(previousX));
+//        NSLog(@"重置位置 x %@",@(previousX));
         [self.scrollView setContentOffset:CGPointMake(previousX, 0) animated:NO];
         
-        NSLog(@"重置位置后 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
+//        NSLog(@"重置位置后 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
     }
     
     [self.scrollView setContentOffset:CGPointMake((viewSize-1) * self.scrollView.bounds.size.width, 0) animated:animation];
@@ -125,12 +125,12 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
     
     CGFloat x = 0;
     if (x == self.scrollView.contentOffset.x) {
-        NSLog(@"重置位置 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
+//        NSLog(@"重置位置 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
         CGFloat previousX = x + self.scrollView.bounds.size.width;
-        NSLog(@"重置位置 x %@",@(previousX));
+//        NSLog(@"重置位置 x %@",@(previousX));
         [self.scrollView setContentOffset:CGPointMake(previousX, 0) animated:NO];
         
-        NSLog(@"重置位置后 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
+//        NSLog(@"重置位置后 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
     }
     
     [self.scrollView setContentOffset:CGPointMake(0, 0) animated:animation];
@@ -443,7 +443,7 @@ static void *ScrollViewContentOffsetObservationContext = &ScrollViewContentOffse
 /**
  *  添加view到scrollView
  *
- *  @param view
+ *  @param view view
  *  @param num 该view在scrollView位置（0、1、2）
  *  @param index 该view在所有页面中的index值
  */
