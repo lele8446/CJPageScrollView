@@ -9,8 +9,8 @@
 Pod::Spec.new do |s|
 
   s.name         = "CJPageScrollView"
-  s.version      = "0.0.2"
-  s.summary      = "自定义的UIScrollView，可实现任意多个页面的横向滚动"
+  s.version      = "1.0.0"
+  s.summary      = "CJPageScrollView可实现任意多个页面的左右滚动切换，以及支持若干焦点图的无限循环滚动"
 
 #  s.description  = <<-DESC
 #                   DESC
@@ -31,9 +31,9 @@ Pod::Spec.new do |s|
     LICENSE
   }
 
-  s.author       = { "lele8446" => "641003000@qq.com" }
+  s.author       = { "lele8446" => "lele8446@foxmail.com" }
   s.platform     = :ios, "7.0"
-  s.source       = { :git => "https://github.com/lele8446/PageScrollViewDemo.git", :tag => "0.0.2" }
+  s.source       = { :git => "https://github.com/lele8446/PageScrollViewDemo.git", :tag => "1.0.0" }
   s.source_files  = "PageScrollView/*"
 
 end
