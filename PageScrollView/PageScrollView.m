@@ -8,7 +8,19 @@
 
 #import "PageScrollView.h"
 
-#define ScrollViewAutoresizingFlexibleAll UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleBottomMargin
+/*******************************************
+ *  YCScrollview
+ *******************************************/
+@protocol YCScrollviewDelegate <NSObject>
+- (BOOL)popGestureEnable;
+@optional
+- (BOOL)scrollUnableWithView:(UIView *)view point:(CGPoint)point;
+@end
+@interface YCScrollview :UIScrollView
+@property(nonatomic, assign)id<YCScrollviewDelegate> scrollviewDelegate;
+@end
+
+#define CJScrollViewAutoresizingFlexibleAll UIViewAutoresizingFlexibleLeftMargin|UIViewAutoresizingFlexibleWidth|UIViewAutoresizingFlexibleRightMargin|UIViewAutoresizingFlexibleTopMargin|UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleBottomMargin
 
 /**
  * ScrollView类型
@@ -22,11 +34,19 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
 };
 
 @interface PageScrollView()<UIGestureRecognizerDelegate,YCScrollviewDelegate>
+{
+    NSInteger _totalPages;
+    NSInteger _curPage;
+}
 @property (nonatomic, strong) YCScrollview *scrollView;
 @property (nonatomic, assign) BOOL isScrolling;//是否滑动
 @property (nonatomic, assign) BOOL scrollToAnimation;//是否执行滑动到指定页面的动画
 @property (nonatomic, assign) BOOL isClickScrollToIndex;//是否点击滑动至指定页（不同于上一页、下一页）
 @property (nonatomic, strong) NSMutableArray *scrollViewArray;//记录scrollView上的view的array
+/**
+ *  是否滑动中
+ */
+@property (nonatomic, assign) BOOL scrolling;
 @end
 
 @implementation PageScrollView
@@ -193,7 +213,7 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
         _scrollView.pagingEnabled = YES;
         _scrollView.delegate = self;
         _scrollView.scrollviewDelegate = self;
-        _scrollView.autoresizingMask = ScrollViewAutoresizingFlexibleAll;
+        _scrollView.autoresizingMask = CJScrollViewAutoresizingFlexibleAll;
         _scrollView.backgroundColor = [UIColor clearColor];
         _scrollView.scrollsToTop = NO;
         [self addObserverForScrollViewContentOffset];
