@@ -64,6 +64,19 @@
  *  @param index     指定页面的index
  */
 - (void)pageScrollView:(PageScrollView *)pageView didLoadItemAtIndex:(NSInteger)index;
+
+/**
+ *  将要开始滑动（手动滑动时触发，PageScrollTimerView定时器自动滚动时不触发）
+ *
+ *  @param pageView  PageScrollView
+ */
+- (void)pageScrollViewWillBeginDragging:(PageScrollView *)pageView;
+/**
+ *  将要停止滑动（手动滑动时触发，PageScrollTimerView定时器自动滚动时不触发）
+ *
+ *  @param pageView  PageScrollView
+ */
+- (void)pageScrollViewWillEndDragging:(PageScrollView *)pageView;
 @end
 
 
@@ -89,7 +102,6 @@
  *  代理
  */
 @property (nonatomic,weak,setter = setDelegate:) id<PageScrollViewDelegate> delegate;
-
 
 /**
  *  刷新数据

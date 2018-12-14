@@ -168,7 +168,13 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
     self.scrollView.scrollviewDelegate = nil;
     id obser = self.scrollView.observationInfo;
     if (obser) {
-        [self.scrollView removeObserver:self forKeyPath:@"contentOffset" context:ScrollViewContentOffsetObservationContext];
+        @try {
+            [self.scrollView removeObserver:self forKeyPath:@"contentOffset" context:ScrollViewContentOffsetObservationContext];
+        } @catch (NSException *exception) {
+            NSLog(@"多次删除了");
+        } @finally {
+            
+        }
     }
 }
 
@@ -503,11 +509,17 @@ static CGFloat _endContentOffsetX;
         self.isScrolling = YES;
         _startContentOffsetX = scrollView.contentOffset.x;
     }
+    if (self.dataSource && [self.dataSource respondsToSelector:@selector(pageScrollViewWillBeginDragging:)]) {
+        [self.dataSource pageScrollViewWillBeginDragging:self];
+    }
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset {
     if (scrollView == self.scrollView) {
         _willEndContentOffsetX = scrollView.contentOffset.x;
+    }
+    if (self.dataSource && [self.dataSource respondsToSelector:@selector(pageScrollViewWillEndDragging:)]) {
+        [self.dataSource pageScrollViewWillEndDragging:self];
     }
 }
 

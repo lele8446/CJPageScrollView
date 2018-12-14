@@ -56,10 +56,10 @@
     self.pgScrollView.delegate = self;
     [self.view addSubview:self.pgScrollView];
     
-//    self.pgScrollView.timeInterval = 3;
-//    self.pgScrollView.scrollDirection = PreviousPage;
-//    self.pgScrollView.cycleEnable = YES;
-//    [self.pgScrollView startTimer];
+    self.pgScrollView.timeInterval = 3;
+    self.pgScrollView.scrollDirection = PreviousPage;
+    self.pgScrollView.cycleEnable = YES;
+    [self.pgScrollView startTimer];
     
     [self.pgScrollView reloadData];
 }
@@ -123,5 +123,12 @@
 
 - (void)didClickPage:(PageScrollView *)pageView atIndex:(NSInteger)index {
 //    NSLog(@"点击了第 %@ 页",@(index+1));
+}
+
+- (void)pageScrollViewWillBeginDragging:(PageScrollView *)pageView {
+    [self.pgScrollView cancelTimer];
+}
+- (void)pageScrollViewWillEndDragging:(PageScrollView *)pageView {
+    [self.pgScrollView startTimer];
 }
 @end
