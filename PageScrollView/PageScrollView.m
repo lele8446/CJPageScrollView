@@ -456,7 +456,7 @@ static void *ScrollViewContentOffsetObservationContext = &ScrollViewContentOffse
  *  @param index 该view在所有页面中的index值
  */
 - (void)addIntentViewToScrollview:(UIView *)view pageNum:(NSInteger)num viewIndex:(NSInteger)index{
-    CGRect viewFrame = view.frame;
+    CGRect viewFrame = CGRectMake(0, 0, self.scrollView.bounds.size.width, self.scrollView.bounds.size.height);
     viewFrame.origin.x = num * self.scrollView.bounds.size.width;
     view.frame = viewFrame;
     [self layoutIfNeeded];
