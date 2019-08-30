@@ -197,6 +197,7 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
 
 - (void)layoutSubviews {
     [super layoutSubviews];
+    self.scrollView.frame = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
     if (self.scrollViewArray.count > 0) {
         for (NSDictionary *dic in self.scrollViewArray) {
             if (dic[@"view"] && ![dic[@"view"] isKindOfClass:[NSNull class]]) {
@@ -219,7 +220,8 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
         _scrollView.pagingEnabled = YES;
         _scrollView.delegate = self;
         _scrollView.scrollviewDelegate = self;
-        _scrollView.autoresizingMask = CJScrollViewAutoresizingFlexibleAll;
+//        _scrollView.autoresizingMask = CJScrollViewAutoresizingFlexibleAll;
+        _scrollView.autoresizingMask = UIViewAutoresizingNone;
         _scrollView.backgroundColor = [UIColor clearColor];
         _scrollView.scrollsToTop = NO;
         [self addObserverForScrollViewContentOffset];
