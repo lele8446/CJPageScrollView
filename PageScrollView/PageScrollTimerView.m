@@ -31,7 +31,8 @@
         return;
     }
     [self cancelTimer];
-    self.pageTimer = [NSTimer scheduledTimerWithTimeInterval:self.timeInterval target:self selector:@selector(scrollToNextWithAnimationWithTimer) userInfo:nil repeats:YES];
+    self.pageTimer = [NSTimer timerWithTimeInterval:self.timeInterval target:self selector:@selector(scrollToNextWithAnimationWithTimer) userInfo:nil repeats:YES];
+    [[NSRunLoop currentRunLoop] addTimer:self.pageTimer forMode:NSRunLoopCommonModes];
 }
 
 - (void)cancelTimer
