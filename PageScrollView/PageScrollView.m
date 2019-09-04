@@ -362,7 +362,7 @@ static void *ScrollViewContentOffsetObservationContext = &ScrollViewContentOffse
         
         self.scrollView.contentSize = CGSizeMake(self.scrollView.bounds.size.width * 2,0);
         [self.scrollView setContentOffset:CGPointMake(0, 0) animated:NO];
-        [self hasScrollToCurrentView];
+        [self hasScrollToCurrentView:curView];
     }
     else if (type == IntactView) {
         NSInteger preIndex = [self validPageValue:_curPage-1];
@@ -379,7 +379,7 @@ static void *ScrollViewContentOffsetObservationContext = &ScrollViewContentOffse
         
         self.scrollView.contentSize = CGSizeMake(self.scrollView.bounds.size.width * 3,0);
         [self.scrollView setContentOffset:CGPointMake(self.scrollView.bounds.size.width, 0) animated:NO];
-        [self hasScrollToCurrentView];
+        [self hasScrollToCurrentView:curView];
     }
     else if (type == WithOutTailView) {
         NSInteger preIndex = [self validPageValue:_curPage-1];
@@ -392,7 +392,7 @@ static void *ScrollViewContentOffsetObservationContext = &ScrollViewContentOffse
         
         self.scrollView.contentSize = CGSizeMake(self.scrollView.bounds.size.width * 2,0);
         [self.scrollView setContentOffset:CGPointMake(self.scrollView.bounds.size.width, 0) animated:NO];
-        [self hasScrollToCurrentView];
+        [self hasScrollToCurrentView:curView];
     }
     else if (type == WithOutHeadTailView) {
         NSInteger curIndex = [self validPageValue:_curPage];
@@ -401,13 +401,16 @@ static void *ScrollViewContentOffsetObservationContext = &ScrollViewContentOffse
         
         self.scrollView.contentSize = CGSizeMake(self.scrollView.bounds.size.width,0);
         [self.scrollView setContentOffset:CGPointMake(0, 0) animated:NO];
-        [self hasScrollToCurrentView];
+        [self hasScrollToCurrentView:curView];
     }
 }
 
-- (void)hasScrollToCurrentView {
+- (void)hasScrollToCurrentView:(UIView *)currentView {
     if (self.dataSource && [self.dataSource respondsToSelector:@selector(pageScrollView:didLoadItemAtIndex:)]) {
         [self.dataSource pageScrollView:self didLoadItemAtIndex:_curPage];
+    }
+    if (self.dataSource && [self.dataSource respondsToSelector:@selector(pageScrollView:didScrollToIndex:currentView:)]) {
+        [self.dataSource pageScrollView:self didScrollToIndex:_curPage currentView:currentView];
     }
     [self setViewScrollsToTop];
 }

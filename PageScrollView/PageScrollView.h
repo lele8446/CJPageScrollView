@@ -66,6 +66,15 @@
 - (void)pageScrollView:(PageScrollView *)pageView didLoadItemAtIndex:(NSInteger)index;
 
 /**
+ *  已滑动至第index页
+ *
+ *  @param pageView  PageScrollView
+ *  @param index     指定页面的index
+ *  @param currentView     当前所在view
+ */
+- (void)pageScrollView:(PageScrollView *)pageView didScrollToIndex:(NSInteger)index currentView:(UIView *)currentView;
+
+/**
  *  将要开始滑动（手动滑动时触发，PageScrollTimerView定时器自动滚动时不触发）
  *
  *  @param pageView  PageScrollView
