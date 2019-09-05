@@ -17,6 +17,10 @@ typedef NS_ENUM(NSInteger, ScrollDirectionType)
 @interface PageScrollTimerView : PageScrollView
 
 /**
+ *  是否计时中
+ */
+@property (nonatomic, assign, readonly) BOOL isTiming;
+/**
  *  计时间隔
  */
 @property (nonatomic, assign) NSTimeInterval timeInterval;

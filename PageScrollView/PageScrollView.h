@@ -111,6 +111,10 @@
  *  代理
  */
 @property (nonatomic,weak,setter = setDelegate:) id<PageScrollViewDelegate> delegate;
+/**
+ *  是否滑动中
+ */
+@property (nonatomic, assign,readonly) BOOL scrolling;
 
 /**
  *  刷新数据

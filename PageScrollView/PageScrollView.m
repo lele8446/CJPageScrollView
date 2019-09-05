@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
     NSInteger _curPage;
 }
 @property (nonatomic, strong) YCScrollview *scrollView;
-@property (nonatomic, assign) BOOL isScrolling;//是否滑动
+@property (nonatomic, assign) BOOL scrollingWithoutUpdate;//滑动中无需更新页面
 @property (nonatomic, assign) BOOL scrollToAnimation;//是否执行滑动到指定页面的动画
 @property (nonatomic, assign) BOOL isClickScrollToIndex;//是否点击滑动至指定页（不同于上一页、下一页）
 @property (nonatomic, strong) NSMutableArray *scrollViewArray;//记录scrollView上的view的array
@@ -106,13 +106,9 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
     CGFloat viewSize = self.scrollView.contentSize.width/self.scrollView.bounds.size.width;
     CGFloat x = (viewSize-1) * self.scrollView.bounds.size.width;
     if (x == self.scrollView.contentOffset.x) {
-//        NSLog(@"重置位置 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
         CGFloat previousX = x - self.scrollView.bounds.size.width;
         previousX = previousX > 0?previousX:0;
-//        NSLog(@"重置位置 x %@",@(previousX));
         [self.scrollView setContentOffset:CGPointMake(previousX, 0) animated:NO];
-        
-//        NSLog(@"重置位置后 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
     }
     
     [self.scrollView setContentOffset:CGPointMake((viewSize-1) * self.scrollView.bounds.size.width, 0) animated:animation];
@@ -125,12 +121,8 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
     
     CGFloat x = 0;
     if (x == self.scrollView.contentOffset.x) {
-//        NSLog(@"重置位置 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
         CGFloat previousX = x + self.scrollView.bounds.size.width;
-//        NSLog(@"重置位置 x %@",@(previousX));
         [self.scrollView setContentOffset:CGPointMake(previousX, 0) animated:NO];
-        
-//        NSLog(@"重置位置后 %@",NSStringFromCGPoint(self.scrollView.contentOffset));
     }
     
     [self.scrollView setContentOffset:CGPointMake(0, 0) animated:animation];
@@ -139,13 +131,13 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
 - (void)scrollToIndexView:(NSInteger)index animation:(BOOL)animation {
     if (index != _curPage && (index <= _totalPages-1 && index >= 0)) {
         if (animation) {
+            self.scrollToAnimation = YES;
+            self.scrolling = YES;
             //滑动至指定页面动画
             CGFloat viewSize = self.scrollView.contentSize.width/self.scrollView.bounds.size.width;
             if (index < _curPage) {//往前滑
-                self.scrollToAnimation = YES;
                 [self.scrollView setContentOffset:CGPointMake(0, 0) animated:animation];
             }else if (index > _curPage){//往后滑
-                self.scrollToAnimation = YES;
                 [self.scrollView setContentOffset:CGPointMake((viewSize-1) * self.scrollView.bounds.size.width, 0) animated:animation];
             }
         }
@@ -256,7 +248,7 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
 //设置初始值
 - (void)setInitialValue {
     _curPage = 0;
-    self.isScrolling = NO;
+    self.scrollingWithoutUpdate = NO;
     self.cycleEnable = NO;
     self.scrollToAnimation = NO;
     self.bounces = NO;
@@ -292,7 +284,7 @@ static void *ScrollViewContentOffsetObservationContext = &ScrollViewContentOffse
     if (self.scrollToAnimation) {
         return;
     }
-    if (self.isScrolling) {
+    if (self.scrollingWithoutUpdate) {
         return;
     }
     if (self.isClickScrollToIndex) {
@@ -310,8 +302,6 @@ static void *ScrollViewContentOffsetObservationContext = &ScrollViewContentOffse
                 if (currentPage != _curPage) {
                     [self loadData];
                 }
-                self.scrollToAnimation = NO;
-                self.scrolling = NO;
             }
             else if(scrollView.contentOffset.x == (viewSize-1) * self.scrollView.bounds.size.width) {//下一页
                 NSInteger currentPage = _curPage;
@@ -319,9 +309,9 @@ static void *ScrollViewContentOffsetObservationContext = &ScrollViewContentOffse
                 if (currentPage != _curPage) {
                     [self loadData];
                 }
-                self.scrollToAnimation = NO;
-                self.scrolling = NO;
             }
+            self.scrollToAnimation = NO;
+            self.scrolling = NO;
         }
         
     }else {
@@ -503,7 +493,7 @@ static void *ScrollViewContentOffsetObservationContext = &ScrollViewContentOffse
 
 #pragma mark - UIScrollViewDelegate
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
-    
+    self.scrolling = YES;
 }
 
 static CGFloat _startContentOffsetX;
@@ -511,7 +501,7 @@ static CGFloat _willEndContentOffsetX;
 static CGFloat _endContentOffsetX;
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     if (scrollView == self.scrollView) {
-        self.isScrolling = YES;
+        self.scrollingWithoutUpdate = YES;
         _startContentOffsetX = scrollView.contentOffset.x;
     }
     if (self.dataSource && [self.dataSource respondsToSelector:@selector(pageScrollViewWillBeginDragging:)]) {
@@ -534,7 +524,7 @@ static CGFloat _endContentOffsetX;
     }
 }
 
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView{
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     if (scrollView == self.scrollView) {
         _endContentOffsetX = scrollView.contentOffset.x;
         
@@ -558,7 +548,7 @@ static CGFloat _endContentOffsetX;
             }
             else{
                 //                CRMLog(@"未知状态");
-                self.isScrolling = NO;
+                self.scrollingWithoutUpdate = NO;
             }
         }else{
             if( (_endContentOffsetX == _willEndContentOffsetX) && _endContentOffsetX == 0 ){
@@ -580,7 +570,7 @@ static CGFloat _endContentOffsetX;
             }
             else{
                 //                CRMLog(@"未知状态");
-                self.isScrolling = NO;
+                self.scrollingWithoutUpdate = NO;
             }
         }
         
@@ -594,26 +584,30 @@ static CGFloat _endContentOffsetX;
     }
 }
 
+- (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
+    self.scrolling = NO;
+}
+
 - (void)scrollToNext:(BOOL)next {
     if (next) {
         NSInteger pageIndex = _curPage;
         if (pageIndex == [self validPageValue:pageIndex + 1]) {
             //            CRMLog(@"在第一页边界");
-            self.isScrolling = NO;
+            self.scrollingWithoutUpdate = NO;
             return;
         }
         [self updateCurPageIndexToNextPage:YES];
-        self.isScrolling = NO;
+        self.scrollingWithoutUpdate = NO;
         [self loadData];
     }else{
         NSInteger pageIndex = _curPage;
         if (pageIndex == [self validPageValue:pageIndex - 1]) {
             //            CRMLog(@"在最后一页边界");
-            self.isScrolling = NO;
+            self.scrollingWithoutUpdate = NO;
             return;
         }
         [self updateCurPageIndexToNextPage:NO];
-        self.isScrolling = NO;
+        self.scrollingWithoutUpdate = NO;
         [self loadData];
     }
 }
