@@ -8,11 +8,7 @@
 
 #import "PageScrollView.h"
 
-typedef NS_ENUM(NSInteger, ScrollDirectionType)
-{
-    NextPage = 0,      //下一页
-    PreviousPage,      //上一页
-};
+
 
 @interface PageScrollTimerView : PageScrollView
 
@@ -24,10 +20,6 @@ typedef NS_ENUM(NSInteger, ScrollDirectionType)
  *  计时间隔
  */
 @property (nonatomic, assign) NSTimeInterval timeInterval;
-/**
- *  滑动方向(默认NextPage)
- */
-@property (nonatomic, assign) ScrollDirectionType scrollDirection;
 
 /**
  *  开启计时

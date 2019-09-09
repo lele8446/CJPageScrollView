@@ -7,6 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+typedef NS_ENUM(NSInteger, ScrollDirectionType)
+{
+    NextPage = 0,      ///< 下一页
+    PreviousPage,      ///< 上一页
+};
+
 @class PageScrollView;
 
 /*******************************************
@@ -115,6 +121,10 @@
  *  是否滑动中
  */
 @property (nonatomic, assign,readonly) BOOL scrolling;
+/**
+ *  滑动方向(默认NextPage)
+ */
+@property (nonatomic, assign) ScrollDirectionType scrollDirection;
 
 /**
  *  刷新数据
