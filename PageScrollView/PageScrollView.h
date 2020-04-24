@@ -125,6 +125,10 @@ typedef NS_ENUM(NSInteger, ScrollDirectionType)
  *  滑动方向(默认NextPage)
  */
 @property (nonatomic, assign) ScrollDirectionType scrollDirection;
+/**
+ * 所在VC是否禁用右滑返回，默认NO
+ */
+@property(nonatomic, assign) BOOL disablePopGesture;
 
 /**
  *  刷新数据

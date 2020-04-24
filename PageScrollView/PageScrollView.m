@@ -44,6 +44,7 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
  *  是否滑动中
  */
 @property (nonatomic, assign) BOOL scrolling;
+@property (nonatomic, assign) BOOL needReloadAfterEndScrollAnimation;
 @end
 
 @implementation PageScrollView
@@ -107,11 +108,13 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
     }
 
     CGFloat viewPage = self.scrollView.contentSize.width/self.scrollView.bounds.size.width;
-    [self.scrollView setContentOffset:CGPointMake((viewPage-1) * self.scrollView.bounds.size.width, 0) animated:animation];
-    
     //没有动画，那么直接更新数据；有动画的话会在滑动动画完成后，在scrollViewDidEndScrollingAnimation: 方法中执行更新
     if (!animation) {
+        [self.scrollView setContentOffset:CGPointMake((viewPage-1) * self.scrollView.bounds.size.width, 0) animated:animation];
         [self updatePageAfterScrollViewDidEndScrollingAnimation];
+    }else{
+        self.needReloadAfterEndScrollAnimation = YES;
+        [self.scrollView setContentOffset:CGPointMake((viewPage-1) * self.scrollView.bounds.size.width, 0) animated:animation];
     }
 }
 
@@ -124,11 +127,13 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
         return;
     }
     
-    [self.scrollView setContentOffset:CGPointMake(0, 0) animated:animation];
-    
     //没有动画，那么直接更新数据；有动画的话会在滑动动画完成后，在scrollViewDidEndScrollingAnimation: 方法中执行更新
     if (!animation) {
+        [self.scrollView setContentOffset:CGPointMake(0, 0) animated:animation];
         [self updatePageAfterScrollViewDidEndScrollingAnimation];
+    }else{
+        self.needReloadAfterEndScrollAnimation = YES;
+        [self.scrollView setContentOffset:CGPointMake(0, 0) animated:animation];
     }
 }
 
@@ -192,6 +197,13 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
             }
         }
     }
+}
+
+- (BOOL)cycleEnable {
+    if ([_dataSource numberOfPages] <= 1) {
+        return NO;
+    }
+    return _cycleEnable;
 }
 
 - (YCScrollview *)scrollView {
@@ -383,9 +395,9 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
     CGRect viewFrame = CGRectMake(0, 0, self.scrollView.bounds.size.width, self.scrollView.bounds.size.height);
     viewFrame.origin.x = num * self.scrollView.bounds.size.width;
     view.frame = viewFrame;
-    [self layoutIfNeeded];
     [self.scrollView addSubview:view];
     [self.scrollViewArray addObject:@{@"index":[NSNumber numberWithInteger:index],@"view":view?view:[NSNull null]}];
+    [self layoutIfNeeded];
 }
 
 //计算inedx值
@@ -513,7 +525,10 @@ static CGFloat _endContentOffsetX;
 }
 
 - (void)scrollViewDidEndScrollingAnimation:(UIScrollView *)scrollView {
-    [self updatePageAfterScrollViewDidEndScrollingAnimation];
+    if (self.needReloadAfterEndScrollAnimation) {
+        [self updatePageAfterScrollViewDidEndScrollingAnimation];
+    }
+    self.needReloadAfterEndScrollAnimation = NO;
 }
 
 - (void)updatePageAfterScrollViewDidEndScrollingAnimation {
@@ -547,6 +562,9 @@ static CGFloat _endContentOffsetX;
 
 #pragma mark - YCScrollviewDelegate
 - (BOOL)popGestureEnable {
+    if (self.disablePopGesture) {
+        return NO;
+    }
     if (!self.cycleEnable && _curPage == 0) {
         return YES;
     }
@@ -556,7 +574,7 @@ static CGFloat _endContentOffsetX;
 }
 
 - (BOOL)scrollUnableWithView:(UIView *)view point:(CGPoint)point {
-    BOOL scrollEnable = YES;
+    BOOL scrollEnable = self.scrollEnabled;
     if (self.delegate && [self.delegate respondsToSelector:@selector(pageScrollView:scrollUnableWithView:point:)]) {
         scrollEnable = [self.delegate pageScrollView:self scrollUnableWithView:view point:point];
     }
