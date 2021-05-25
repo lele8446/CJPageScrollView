@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4314AEF7265D0716008A799C /* CJPageScrollView.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 4314AEF6265D0716008A799C /* CJPageScrollView.podspec */; };
 		B42E47361E0BAAF000E97BF6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B42E47351E0BAAF000E97BF6 /* main.m */; };
 		B42E47391E0BAAF000E97BF6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B42E47381E0BAAF000E97BF6 /* AppDelegate.m */; };
 		B42E473C1E0BAAF000E97BF6 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B42E473B1E0BAAF000E97BF6 /* ViewController.m */; };
@@ -38,6 +39,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		4314AEF6265D0716008A799C /* CJPageScrollView.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = CJPageScrollView.podspec; sourceTree = "<group>"; };
 		B42E47311E0BAAF000E97BF6 /* PageScrollViewDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PageScrollViewDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B42E47351E0BAAF000E97BF6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		B42E47371E0BAAF000E97BF6 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -90,6 +92,7 @@
 		B42E47281E0BAAF000E97BF6 = {
 			isa = PBXGroup;
 			children = (
+				4314AEF6265D0716008A799C /* CJPageScrollView.podspec */,
 				B42E47331E0BAAF000E97BF6 /* PageScrollViewDemo */,
 				B42E474D1E0BAAF100E97BF6 /* PageScrollViewDemoTests */,
 				B42E47581E0BAAF100E97BF6 /* PageScrollViewDemoUITests */,
@@ -246,6 +249,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);
@@ -266,6 +270,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4314AEF7265D0716008A799C /* CJPageScrollView.podspec in Resources */,
 				B42E47441E0BAAF000E97BF6 /* LaunchScreen.storyboard in Resources */,
 				B42E47411E0BAAF000E97BF6 /* Assets.xcassets in Resources */,
 				B42E473F1E0BAAF000E97BF6 /* Main.storyboard in Resources */,

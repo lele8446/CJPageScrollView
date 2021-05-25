@@ -99,6 +99,9 @@ typedef NS_ENUM(NSInteger, ScrollViewType)
 }
 
 - (void)scrollToNextWithAnimation:(BOOL)animation {
+    if (self.scrollView.bounds.size.width == 0) {
+        return;
+    }
     if (!self.cycleEnable && _curPage >= _totalPages-1) {
         return;
     }

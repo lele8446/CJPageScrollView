@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
 
   s.name         = "CJPageScrollView"
-  s.version      = "1.1.0"
+  s.version      = "1.1.1"
   s.summary      = "CJPageScrollView可实现任意多个页面的左右滚动切换，以及支持若干焦点图的无限循环滚动，定时自动循环滚动"
 
 #  s.description  = <<-DESC
