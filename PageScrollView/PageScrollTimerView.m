@@ -8,9 +8,38 @@
 
 #import "PageScrollTimerView.h"
 
+@interface CJProxy : NSProxy
+@property (nonatomic, weak, readonly) id target;
++ (CJProxy *)proxyWithTarget:(id)target;
+@end
+@interface CJProxy ()
+@property (nonatomic, weak) id target;
+@end
+@implementation CJProxy
++ (CJProxy *)proxyWithTarget:(id)target {
+    CJProxy *proxy = [CJProxy alloc];
+    proxy.target = target;
+    return proxy;
+}
+// 方案一：直接指定转发对象为target
+- (id)forwardingTargetForSelector:(SEL)aSelector {
+    return self.target;
+}
+//// 方案二：使用self.target转发消息
+//- (NSMethodSignature *)methodSignatureForSelector:(SEL)sel {
+//    return [self.target methodSignatureForSelector:sel];
+//}
+//- (void)forwardInvocation:(NSInvocation *)invocation {
+//    if ([self.target respondsToSelector:invocation.selector]) {
+//        [self.target invokeWithTarget:self.target];
+//    }
+//}
+
+@end
+
 @interface PageScrollTimerView()
 @property (nonatomic, strong) NSTimer *pageTimer;
-@property (nonatomic, strong) BOOL isTiming;
+@property (nonatomic, assign) BOOL isTiming;
 @end
 
 @implementation PageScrollTimerView
